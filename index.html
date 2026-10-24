@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PENELOPA COSMETICS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>tailwind.config={theme:{extend:{colors:{blush:'#fff5f7',rose:{DEFAULT:'#e8869f',deep:'var(--deep)',soft:'#fbd5de'},gold:'#c9a36b'},fontFamily:{head:['Playfair Display','serif'],body:['Georgia','serif']}}}}</script>
+<style>
+.inp{width:100%;border:1px solid #d9b8c2;border-radius:3px;padding:11px 12px;background:#fff;font-size:16px;outline:none}.inp:focus{border-color:var(--deep)}
+:root{--deep:#b83b63}
+.btn{background:var(--deep);color:#fff;border-radius:3px;padding:11px 20px;font-weight:600;min-height:44px}.btn:hover{filter:brightness(.88)}
+.gold{background:#c9a36b;color:#fff}
+.card{border:1px solid #ecd3da}
+</style></head>
+<body class="bg-blush font-body text-stone-700">
+<header class="sticky top-0 z-30 bg-white border-b border-rose-soft">
+<div class="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3 flex-wrap">
+<a href="#home" id="logo1"></a>
+<nav class="hidden lg:flex gap-5 ml-6 text-sm font-medium">
+<a href="#home" data-i="home" class="hover:text-rose-deep"></a><a href="#products" data-i="products" class="hover:text-rose-deep"></a><a href="#products" data-i="categories" class="hover:text-rose-deep"></a><a href="#about" data-i="about" class="hover:text-rose-deep"></a><a href="#contact" data-i="contact" class="hover:text-rose-deep"></a></nav>
+<input id="q" data-p="search" class="inp order-last !w-full md:order-none md:!w-56 md:ml-auto">
+<select id="lang" class="inp !w-auto ml-auto md:ml-0"><option value="0">🇬🇧 EN</option><option value="1">🇷🇺 RU</option><option value="2">🇹🇯 TJ</option></select>
+<button id="adminBtn" class="text-sm font-semibold text-rose-deep relative" data-i="admin"></button>
+<button id="cartBtn" class="relative text-2xl" aria-label="cart"><span id="cartIc"></span><span id="badge" class="absolute -top-2 -right-3 bg-rose-deep text-white text-xs rounded min-w-5 h-5 grid place-items-center px-1">0</span></button>
+</div><nav class="lg:hidden flex gap-5 overflow-x-auto px-4 pb-3 text-sm whitespace-nowrap"><a href="#home" data-i="home"></a><a href="#products" data-i="products"></a><a href="#about" data-i="about"></a><a href="#contact" data-i="contact"></a></nav></header>
+
+<section id="home" class="relative overflow-hidden bg-rose-soft border-b border-gold">
+
+<div class="relative max-w-6xl mx-auto px-4 py-20 md:py-28 text-center fi">
+<p class="text-gold tracking-widest text-sm mb-3" data-i="heroS"></p>
+<h1 class="font-head text-3xl md:text-5xl font-semibold text-rose-deep max-w-3xl mx-auto leading-tight" data-i="heroT"></h1>
+<a href="#products" class="btn inline-block mt-8 text-lg" data-i="shop"></a></div></section>
+
+<main id="products" class="max-w-6xl mx-auto px-4 py-14">
+<h2 class="font-head text-3xl text-center text-rose-deep mb-6" data-i="products"></h2>
+<div id="cats" class="flex gap-2 flex-wrap justify-center mb-4"></div><div class="flex justify-end mb-4"><select id="sort" class="inp !w-auto"></select></div>
+<div id="grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"></div>
+<p id="none" class="hidden text-center text-stone-400 py-10">—</p></main>
+
+<section id="about" class="bg-white py-14"><div class="max-w-3xl mx-auto px-4 text-center"><h2 class="font-head text-3xl text-rose-deep mb-3" data-i="about"></h2><p data-i="aboutT"></p></div></section>
+<footer id="contact" class="bg-rose-deep text-white py-10"><div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row gap-4 items-center justify-between"><div id="logo2"></div><p class="text-sm text-white/80" data-i="contactT"></p><p class="text-xs text-white/60">© PENELOPA COSMETICS</p></div></footer>
+
+<div id="ov" class="hidden fixed inset-0 bg-black/40 z-40"></div>
+<aside id="drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-white z-50 shadow-2xl translate-x-full flex flex-col">
+<div class="p-4 border-b border-rose-soft flex justify-between items-center"><h3 class="font-head text-2xl text-rose-deep" data-i="cart"></h3><button id="cx" class="text-2xl">✕</button></div>
+<div id="items" class="flex-1 overflow-auto p-4 space-y-3"></div>
+<div class="p-4 border-t border-rose-soft"><div class="flex justify-between font-semibold text-lg mb-3"><span data-i="total"></span><span id="tot"></span></div><button id="co" class="btn w-full" data-i="checkout"></button></div></aside>
+
+<div id="modal" class="hidden fixed inset-0 z-[60] grid place-items-center sm:p-4"><div id="mb" class="absolute inset-0 bg-black/50"></div><div id="mc" class="relative bg-white sm:rounded max-w-3xl w-full h-full sm:h-auto max-h-screen sm:max-h-[92vh] overflow-auto"></div></div>
+<div id="toasts" class="fixed top-4 right-4 z-[80] space-y-2"></div>
+
+<script type="module">
+/* ============ CONFIG ============ */
+// Paste your Firebase web config below. While apiKey is empty the app runs in DEMO mode (localStorage, syncs across tabs).
+const FIREBASE_CONFIG={apiKey:"",authDomain:"",projectId:"",appId:""};
+const ADMIN_PASS="penelopa2024"; // client-side only; change it, and protect writes with Firestore rules (see notes)
+
+/* ============ i18n  [EN,RU,TJ] ============ */
+const T={home:["Home","Главная","Асосӣ"],products:["Products","Товары","Маҳсулот"],categories:["Categories","Категории","Категорияҳо"],about:["About","О нас","Дар бораи мо"],contact:["Contact","Контакты","Тамос"],search:["Search products…","Поиск товаров…","Ҷустуҷӯи маҳсулот…"],
+heroT:["Discover Your Natural Glow","Откройте своё естественное сияние","Дурахши табиии худро кашф кунед"],heroS:["LUXURY COSMETICS COLLECTION","КОЛЛЕКЦИЯ ЛЮКСОВОЙ КОСМЕТИКИ","МАҶМӮАИ КОСМЕТИКАИ ЛЮКС"],shop:["Shop Now","Купить сейчас","Ҳозир харед"],all:["All","Все","Ҳама"],
+skincare:["Skincare","Уход за кожей","Нигоҳубини пӯст"],makeup:["Makeup","Макияж","Ороиш"],perfume:["Perfume","Парфюм","Атр"],hair:["Hair Care","Уход за волосами","Нигоҳубини мӯй"],lip:["Lip Care","Уход за губами","Нигоҳубини лаб"],
+add:["Add to Cart","В корзину","Ба сабад"],cart:["Your Cart","Корзина","Сабади шумо"],empty:["Your cart is empty","Корзина пуста","Сабад холӣ аст"],total:["Total","Итого","Ҷамъ"],checkout:["Checkout","Оформить заказ","Фармоиш додан"],
+name:["Full name","Полное имя","Ному насаб"],phone:["Phone number","Телефон","Рақами телефон"],address:["Delivery address","Адрес доставки","Суроғаи расонидан"],pay:["Payment method","Способ оплаты","Тарзи пардохт"],cod:["Cash on delivery","Наличными при получении","Нақд ҳангоми гирифтан"],card:["Card","Картой","Корт"],place:["Place order","Подтвердить заказ","Тасдиқи фармоиш"],
+thanks:["Order placed! Thank you 💖","Заказ принят! Спасибо 💖","Фармоиш қабул шуд! Ташаккур 💖"],fill:["Please fill all fields","Заполните все поля","Ҳамаи майдонҳоро пур кунед"],admin:["Admin","Админ","Админ"],pwd:["Password","Пароль","Рамз"],login:["Log in","Войти","Ворид шудан"],wrong:["Wrong password","Неверный пароль","Рамз нодуруст"],
+orders:["Orders","Заказы","Фармоишҳо"],revenue:["Revenue","Выручка","Даромад"],newo:["New order!","Новый заказ!","Фармоиши нав!"],none:["Nothing here yet","Пока ничего нет","Ҳоло ҳеҷ чиз нест"],
+New:["New","Новый","Нав"],Pending:["Pending","В обработке","Дар интизорӣ"],Completed:["Completed","Выполнен","Иҷро шуд"],
+addP:["Add product","Добавить товар","Илова кардани маҳсулот"],title:["Title","Название","Ном"],price:["Price ($)","Цена ($)","Нарх ($)"],cat:["Category","Категория","Категория"],img:["Image URL","URL изображения","URL-и расм"],desc:["Description","Описание","Тавсиф"],save:["Save","Сохранить","Сабт кардан"],edit:["Edit","Изменить","Тағйир"],del:["Delete","Удалить","Нест кардан"],qty:["Quantity","Количество","Миқдор"],stock:["In stock","В наличии","Мавҷуд аст"],
+fav:["♥ Favorites","♥ Избранное","♥ Дӯстдошта"],sold:["Sold out","Нет в наличии","Тамом шуд"],sNew:["Newest","Новинки","Нав"],sLow:["Price: low to high","Цена: по возрастанию","Нарх: арзонтарин"],sHigh:["Price: high to low","Цена: по убыванию","Нарх: гаронтарин"],pick:["Choose photo from gallery","Выбрать фото из галереи","Интихоби акс аз галерея"],settings:["Settings","Настройки","Танзимот"],sname:["Store name","Название магазина","Номи мағоза"],scontact:["Contact text (footer)","Контакты (внизу сайта)","Тамос (поёни сайт)"],scur:["Currency symbol","Символ валюты","Аломати асъор"],scolor:["Main color","Основной цвет","Ранги асосӣ"],slogo:["Logo image","Логотип","Тасвири логотип"],shero:["Banner image","Фото баннера","Акси баннер"],scart:["Cart icon","Иконка корзины","Тасвири сабад"],sure:["Delete?","Удалить?","Нест кунем?"],
+findAddr:["📍 Detect my address","📍 Определить мой адрес","📍 Ёфтани суроғаи ман"],locating:["Detecting address…","Определяем адрес…","Суроға ёфта истодааст…"],locFail:["Could not detect the address. Please type it manually.","Не удалось определить адрес. Введите его вручную.","Суроға ёфта нашуд. Онро дастӣ нависед."],badPhone:["Enter exactly 9 digits after +992","Введите ровно 9 цифр после +992","Баъд аз +992 ҳамагӣ 9 рақам нависед"],map:["Map","Карта","Харита"],
+aboutT:["PENELOPA COSMETICS creates luxurious, gentle beauty essentials that celebrate your natural glow.","PENELOPA COSMETICS создаёт роскошные и бережные средства красоты, подчёркивающие ваше естественное сияние.","PENELOPA COSMETICS василаҳои зебоии боҳашамат ва мулоимро барои дурахши табиии шумо месозад."],
+contactT:["Dushanbe · +992 001991069","Душанбе · +992 001991069","Душанбе · +992 001991069 ·"]};
+const CATS=["skincare","makeup","perfume","hair","lip"];
+let LI=+(localStorage.getItem("pl")||0);const t=k=>T[k][LI];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const $=s=>document.querySelector(s);
+
+/* ============ LOGO ============ */
+const logo0=(c)=>`<span class="flex items-center gap-2"><svg width="34" height="34" viewBox="0 0 40 40"><defs><linearGradient id="g${c}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3d9a4"/><stop offset="1" stop-color="#c9a36b"/></linearGradient></defs><rect x="15" y="20" width="10" height="16" rx="2" fill="url(#g${c})"/><rect x="16" y="11" width="8" height="10" fill="#e8869f"/><path d="M16 11q4-8 8 0z" fill="#b83b63"/><circle cx="31" cy="10" r="3" fill="#fbd5de" opacity=".9"/><circle cx="8" cy="14" r="2" fill="#fbd5de" opacity=".7"/></svg><span class="font-head leading-none ${c==2?"text-white":"text-rose-deep"}"><b class="text-lg tracking-[.25em]">PENELOPA</b><br><small class="tracking-[.4em] text-[9px] text-gold">COSMETICS</small></span></span>`;
+
+
+/* ============ DATA LAYER (Firebase or demo) ============ */
+const ph=(e,a,b)=>"data:image/svg+xml;utf8,"+encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='${a}'/><stop offset='1' stop-color='${b}'/></linearGradient></defs><rect width='400' height='400' fill='url(#g)'/><text x='200' y='245' font-size='150' text-anchor='middle'>${e}</text></svg>`);
+const SEED=[]; // store starts empty: add products in the Admin panel
+let B;
+async function initDB(){
+if(FIREBASE_CONFIG.apiKey){
+const V="10.12.2",{initializeApp}=await import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`);
+const F=await import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`);
+const db=F.getFirestore(initializeApp(FIREBASE_CONFIG)),P=F.collection(db,"products"),O=F.collection(db,"orders");
+if((await F.getDocs(P)).empty)for(const p of SEED)await F.addDoc(P,p);
+const mapO=s=>s.docs.map(d=>{const x=d.data();return{id:d.id,...x,ts:x.createdAt?.toMillis?.()||Date.now()}});
+B={mode:"Firebase",
+products:cb=>F.onSnapshot(P,s=>cb(s.docs.map(d=>({id:d.id,...d.data()})))),
+orders:cb=>F.onSnapshot(F.query(O,F.orderBy("createdAt","desc")),s=>cb(mapO(s))),
+addOrder:o=>F.addDoc(O,{...o,status:"New",createdAt:F.serverTimestamp()}),
+saveProduct:({id,...p})=>id?F.setDoc(F.doc(db,"products",id),p):F.addDoc(P,p),
+delProduct:id=>F.deleteDoc(F.doc(db,"products",id)),
+setStatus:(id,status)=>F.updateDoc(F.doc(db,"orders",id),{status}),delOrder:id=>F.deleteDoc(F.doc(db,"orders",id)),settings:cb=>F.onSnapshot(F.doc(db,"settings","main"),s=>cb(s.data()||{})),saveSettings:o=>F.setDoc(F.doc(db,"settings","main"),o,{merge:true})};
+}else{
+const get=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}},set=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},subs={products:[],orders:[],settings:[]};
+if(!get("pc_products"))set("pc_products",SEED.map((p,i)=>({...p,id:"s"+i})));
+const fire=k=>subs[k].forEach(cb=>cb(get("pc_"+k)||(k==="settings"?{}:[])));
+addEventListener("storage",e=>{if(e.key==="pc_products")fire("products");if(e.key==="pc_orders")fire("orders");if(e.key==="pc_settings")fire("settings")});
+const sub=k=>cb=>{subs[k].push(cb);cb(get("pc_"+k)||[])};
+B={mode:"Demo",products:sub("products"),orders:sub("orders"),
+addOrder:async o=>{const a=get("pc_orders")||[];a.unshift({...o,id:"o"+Date.now(),status:"New",ts:Date.now()});set("pc_orders",a);fire("orders")},
+saveProduct:async p=>{const a=get("pc_products")||[];if(p.id){a[a.findIndex(x=>x.id===p.id)]=p}else a.push({...p,id:"p"+Date.now()});set("pc_products",a);fire("products")},
+delProduct:async id=>{set("pc_products",(get("pc_products")||[]).filter(x=>x.id!==id));fire("products")},
+setStatus:async(id,s)=>{const a=get("pc_orders")||[];a.forEach(o=>{if(o.id===id)o.status=s});set("pc_orders",a);fire("orders")},delOrder:async id=>{set("pc_orders",(get("pc_orders")||[]).filter(x=>x.id!==id));fire("orders")},settings:cb=>{subs.settings.push(cb);cb(get("pc_settings")||{})},saveSettings:async o=>{set("pc_settings",{...(get("pc_settings")||{}),...o});fire("settings")}};}}
+
+/* ============ STATE & HELPERS ============ */
+let products=[],orders=[],cart={},cat="all",admin=false,firstOrders=true,seen=new Set(),S={},sortBy="new",ordF="all",curImg="",fav=(()=>{try{return JSON.parse(localStorage.getItem("pc_fav")||"{}")}catch(e){return{}}})();
+try{cart=JSON.parse(localStorage.getItem("pc_cart")||"{}")}catch(e){}
+const saveCart=()=>{try{localStorage.setItem("pc_cart",JSON.stringify(cart))}catch(e){}};
+const money=n=>(S.cur||"$")+Number(n).toFixed(2);
+const stars=n=>"★★★★★".slice(0,n)+"☆☆☆☆☆".slice(0,5-n);
+function toast(msg,gold){const d=document.createElement("div");d.className="ti px-4 py-3 rounded shadow-xl text-white "+(gold?"gold":"bg-rose-deep");d.textContent=msg;$("#toasts").append(d);setTimeout(()=>d.remove(),4000)}
+function beep(){try{const c=new (window.AudioContext||window.webkitAudioContext)();[880,1175].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();o.frequency.value=f;o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(.2,c.currentTime+i*.18);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+i*.18+.3);o.start(c.currentTime+i*.18);o.stop(c.currentTime+i*.18+.3)})}catch(e){}}
+function modal(html){$("#mc").innerHTML=html;$("#modal").classList.remove("hidden")}
+const closeModal=()=>$("#modal").classList.add("hidden");
+$("#mb").onclick=closeModal;
+
+/* ============ STORE RENDER ============ */
+function applyLang(){document.documentElement.lang=["en","ru","tg"][LI];
+document.querySelectorAll("[data-i]").forEach(e=>e.textContent=t(e.dataset.i));
+document.querySelectorAll("[data-p]").forEach(e=>e.placeholder=t(e.dataset.p));
+$("#lang").value=LI;applySettings();renderSort();$("#none").textContent=t("none");renderCats();renderGrid();renderCart();if(admin&&!$("#modal").classList.contains("hidden"))renderAdmin()}
+function renderCats(){$("#cats").innerHTML=["all","fav",...CATS].map(c=>`<button data-c="${c}" class="px-4 py-2 rounded text-sm font-medium ${c===cat?"btn":"bg-white border border-rose-soft hover:bg-rose-soft"}">${t(c)}</button>`).join("");
+$("#cats").querySelectorAll("button").forEach(b=>b.onclick=()=>{cat=b.dataset.c;renderCats();renderGrid()})}
+function renderGrid(){const q=$("#q").value.toLowerCase();let l=products.filter(p=>(cat==="all"||(cat==="fav"?fav[p.id]:p.category===cat))&&(p.title+p.description).toLowerCase().includes(q));if(sortBy==="low")l=[...l].sort((a,b)=>a.price-b.price);if(sortBy==="high")l=[...l].sort((a,b)=>b.price-a.price);
+$("#none").classList.toggle("hidden",l.length>0);
+$("#grid").innerHTML=l.map((p,i)=>`<article class="card relative bg-white overflow-hidden"><button data-f="${p.id}" class="absolute top-2 right-2 z-10 w-9 h-9 bg-white/90 border border-rose-soft text-lg text-rose-deep" aria-label="fav">${fav[p.id]?"♥":"♡"}</button><div class="aspect-square overflow-hidden cursor-pointer" data-v="${p.id}"><img src="${esc(p.image)}" alt="${esc(p.title)}" class="w-full h-full object-cover" loading="lazy"></div>
+<div class="p-3 md:p-4"><p class="text-xs text-gold">${t(p.category)||esc(p.category)}</p><h3 class="font-head text-base md:text-lg text-stone-800 cursor-pointer" data-v="${p.id}">${esc(p.title)}</h3><p class="text-amber-400 text-sm">${stars(5)}</p>
+<b class="text-rose-deep block mt-2">${money(p.price)}</b><button data-a="${p.id}" class="btn w-full mt-2 text-sm !px-2" ${p.stock===false?"disabled style=\"opacity:.5\"":""}>${p.stock===false?t("sold"):t("add")}</button></div></article>`).join("");
+$("#grid").querySelectorAll("[data-v]").forEach(e=>e.onclick=()=>detail(e.dataset.v));
+$("#grid").querySelectorAll("[data-a]").forEach(e=>e.onclick=()=>addCart(e.dataset.a,1));$("#grid").querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{const id=b.dataset.f;fav[id]?delete fav[id]:fav[id]=1;try{localStorage.setItem("pc_fav",JSON.stringify(fav))}catch(e){}renderGrid()})}
+function detail(id){const p=products.find(x=>x.id===id);if(!p)return;let n=1;
+modal(`<div class="grid md:grid-cols-2"><img src="${esc(p.image)}" class="w-full h-full object-cover max-h-96 md:max-h-none"><div class="p-6 relative"><button id="mx" class="absolute top-3 right-4 text-2xl">✕</button><p class="text-gold text-sm">${t(p.category)||esc(p.category)}</p><h2 class="font-head text-3xl text-rose-deep">${esc(p.title)}</h2><p class="text-amber-400">${stars(5)}</p><p class="my-4">${esc(p.description)}</p><p class="text-2xl font-bold text-rose-deep">${money(p.price)}</p><p class="text-xs ${p.stock===false?"text-red-500":"text-green-600"} mb-4">● ${p.stock===false?t("sold"):t("stock")}</p>
+<div class="flex items-center gap-3 mb-4"><span class="text-sm">${t("qty")}</span><button id="mn" class="w-8 h-8 rounded bg-rose-soft">−</button><b id="nn">1</b><button id="pl" class="w-8 h-8 rounded bg-rose-soft">+</button></div><button id="ad" class="btn w-full" ${p.stock===false?"disabled style=\"opacity:.5\"":""}>${t("add")}</button></div></div>`);
+$("#mx").onclick=closeModal;$("#mn").onclick=()=>$("#nn").textContent=n=Math.max(1,n-1);$("#pl").onclick=()=>$("#nn").textContent=++n;$("#ad").onclick=()=>{addCart(id,n);closeModal()}}
+function addCart(id,n){cart[id]=(cart[id]||0)+n;saveCart();renderCart();toast("🛍️ +"+n,true);const b=$("#badge");b.classList.add("pl");setTimeout(()=>b.classList.remove("pl"),1200)}
+function renderCart(){const rows=Object.keys(cart).map(id=>({p:products.find(x=>x.id===id),n:cart[id],id})).filter(r=>r.p);
+$("#badge").textContent=rows.reduce((s,r)=>s+r.n,0);const sum=rows.reduce((s,r)=>s+r.n*r.p.price,0);$("#tot").textContent=money(sum);
+$("#items").innerHTML=rows.length?rows.map(r=>`<div class="flex gap-3 items-center fi"><img src="${esc(r.p.image)}" class="w-16 h-16 rounded object-cover"><div class="flex-1"><p class="font-medium text-sm">${esc(r.p.title)}</p><p class="text-rose-deep text-sm">${money(r.p.price)}</p></div><div class="flex items-center gap-2"><button data-d="${r.id}" class="w-7 h-7 rounded bg-rose-soft">−</button><b>${r.n}</b><button data-u="${r.id}" class="w-7 h-7 rounded bg-rose-soft">+</button></div></div>`).join(""):`<div class="text-center text-stone-400 mt-10 flex flex-col items-center gap-2">${BAG}<p>${t("empty")}</p></div>`;
+$("#items").querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{const i=b.dataset.d;if(--cart[i]<=0)delete cart[i];saveCart();renderCart()});
+$("#items").querySelectorAll("[data-u]").forEach(b=>b.onclick=()=>{cart[b.dataset.u]++;saveCart();renderCart()});
+$("#co").disabled=!rows.length;$("#co").style.opacity=rows.length?1:.5}
+const drawer=o=>{$("#drawer").classList.toggle("translate-x-full",!o);$("#ov").classList.toggle("hidden",!o)};
+$("#cartBtn").onclick=()=>drawer(true);$("#cx").onclick=$("#ov").onclick=()=>drawer(false);
+$("#co").onclick=()=>{drawer(false);modal(`<div class="p-6 relative"><button id="mx" class="absolute top-3 right-4 text-2xl">✕</button><h2 class="font-head text-3xl text-rose-deep mb-4">${t("checkout")}</h2><div class="space-y-3"><input id="cn" class="inp" placeholder="${t("name")}"><div class="flex"><span class="inp !w-auto !border-r-0 bg-rose-soft font-semibold flex items-center">+992</span><input id="cp" class="inp" type="tel" inputmode="numeric" maxlength="9" placeholder="900000000" autocomplete="tel-national" aria-label="${t("phone")}"></div><textarea id="ca" class="inp" rows="2" placeholder="${t("address")}"></textarea><div class="flex items-center gap-2"><button id="gl" type="button" class="btn !py-1 text-sm">${t("findAddr")}</button><span id="gst" class="text-xs text-stone-500"></span></div><select id="cm" class="inp"><option value="COD">${t("cod")}</option><option value="Card">${t("card")}</option></select><p class="font-semibold">${t("total")}: ${$("#tot").textContent}</p><button id="po" class="btn w-full">${t("place")}</button></div></div>`);
+$("#mx").onclick=closeModal;let geo=null;
+const locate=()=>{const st=$("#gst");if(!navigator.geolocation){st.textContent=t("locFail");return}st.textContent=t("locating");
+navigator.geolocation.getCurrentPosition(async pos=>{const la=pos.coords.latitude,lo=pos.coords.longitude;geo={lat:la,lon:lo};let a=la.toFixed(5)+", "+lo.toFixed(5);
+try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${la}&lon=${lo}&accept-language=${["en","ru","tg"][LI]}`);const j=await r.json();if(j.display_name)a=j.display_name}catch(e){}
+$("#ca").value=a;st.textContent="✔"},()=>{st.textContent=t("locFail")},{enableHighAccuracy:true,timeout:15000})};
+$("#gl").onclick=locate;locate();
+$("#cp").oninput=e=>{e.target.value=e.target.value.replace(/\D/g,"").slice(0,9)};$("#cp").onpaste=e=>{e.preventDefault();let d=(e.clipboardData.getData("text")||"").replace(/\D/g,"");if(d.startsWith("992")&&d.length>=12)d=d.slice(3);e.target.value=d.slice(0,9)};
+$("#po").onclick=async()=>{const name=$("#cn").value.trim(),digits=$("#cp").value,phone="+992"+digits,address=$("#ca").value.trim();if(!name||!address)return toast(t("fill"));if(!/^\d{9}$/.test(digits))return toast(t("badPhone"));
+const items=Object.keys(cart).map(id=>{const p=products.find(x=>x.id===id);return p&&{id,title:p.title,price:p.price,qty:cart[id]}}).filter(Boolean);
+try{await B.addOrder({name,phone,address,...(geo?{lat:geo.lat,lon:geo.lon}:{}),payment:$("#cm").value,items,total:items.reduce((s,i)=>s+i.price*i.qty,0)});cart={};saveCart();renderCart();closeModal();toast(t("thanks"),true)}catch(e){console.error(e);toast("Error: "+e.message)}}};
+
+/* ============ ADMIN ============ */
+$("#adminBtn").onclick=()=>{if(admin)return renderAdmin();modal(`<div class="p-6 relative"><button id="mx" class="absolute top-3 right-4 text-2xl">✕</button><h2 class="font-head text-3xl text-rose-deep mb-4">${t("admin")}</h2><input id="pw" type="password" class="inp mb-3" placeholder="${t("pwd")}"><button id="lg" class="btn w-full">${t("login")}</button></div>`);
+$("#mx").onclick=closeModal;const go=()=>{if($("#pw").value!==ADMIN_PASS)return toast(t("wrong"));admin=true;B.orders(onOrders);renderAdmin()};$("#lg").onclick=go;$("#pw").onkeydown=e=>{if(e.key==="Enter")go()}};
+function onOrders(list){const fresh=list.filter(o=>!seen.has(o.id));list.forEach(o=>seen.add(o.id));orders=list;
+if(!firstOrders&&fresh.length){beep();fresh.forEach(o=>toast(`🔔 ${t("newo")} ${o.name} · ${money(o.total)}`))}firstOrders=false;
+if(!$("#modal").classList.contains("hidden")&&$("#ordBox"))renderOrders()}
+let editing=null;
+function renderAdmin(){curImg="";editing=null;modal(`<div class="p-5 relative"><button id="mx" class="absolute top-3 right-4 text-2xl">✕</button><h2 class="font-head text-3xl text-rose-deep mb-1">${t("admin")} <small class="text-xs text-gold font-body">(${B.mode})</small></h2><button id="gs" class="btn !py-1 text-sm mb-2">⚙ ${t("settings")}</button>
+<div class="grid grid-cols-2 gap-3 my-4"><div class="bg-blush rounded p-3 text-center"><p class="text-xs">${t("orders")}</p><b id="sO" class="text-2xl text-rose-deep pl inline-block rounded px-3"></b></div><div class="bg-blush rounded p-3 text-center"><p class="text-xs">${t("revenue")}</p><b id="sR" class="text-2xl text-rose-deep"></b></div></div>
+<div class="flex justify-between items-center mb-2 gap-2"><h3 class="font-semibold">${t("orders")}</h3><select id="of" class="inp !w-auto !py-1">${["all","New","Pending","Completed"].map(s=>`<option value="${s}" ${ordF===s?"selected":""}>${t(s)}</option>`).join("")}</select></div><div id="ordBox" class="space-y-3 max-h-72 overflow-auto mb-6"></div>
+<h3 class="font-semibold mb-2">${t("addP")}</h3><div class="grid md:grid-cols-2 gap-2"><input id="pt" class="inp" placeholder="${t("title")}"><input id="pr" type="number" step="0.01" class="inp" placeholder="${t("price")}"><select id="pc" class="inp">${CATS.map(c=>`<option value="${c}">${t(c)}</option>`).join("")}</select><div class="md:col-span-2 flex items-center gap-3"><img id="pv" class="w-16 h-16 object-cover border border-rose-soft hidden"><label class="btn !bg-white !text-rose-deep border border-rose-soft cursor-pointer text-center">📷 ${t("pick")}<input id="pf" type="file" accept="image/*" class="hidden"></label></div><textarea id="pd" class="inp md:col-span-2" rows="2" placeholder="${t("desc")}"></textarea></div><button id="ps" class="btn mt-3">${t("save")}</button>
+<div id="pList" class="mt-4 space-y-2 max-h-60 overflow-auto"></div></div>`);
+$("#mx").onclick=closeModal;renderOrders();renderPList();$("#gs").onclick=renderSettings;$("#of").onchange=e=>{ordF=e.target.value;renderOrders()};$("#pf").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{curImg=await shrink(f,700,"image/jpeg");$("#pv").src=curImg;$("#pv").classList.remove("hidden")}catch(x){toast("Image error")}};
+$("#ps").onclick=async()=>{const p={title:$("#pt").value.trim(),price:+$("#pr").value,category:$("#pc").value,image:curImg||ph("💖","#fbd5de","#e8869f"),description:$("#pd").value.trim(),stock:editing?(products.find(x=>x.id===editing)||{}).stock!==false:true};if(!p.title||!(p.price>0))return toast(t("fill"));if(editing)p.id=editing;editing=null;await B.saveProduct(p);toast("✔ "+t("save"),true);renderAdmin()}}
+function renderOrders(){$("#sO").textContent=orders.length;$("#sR").textContent=money(orders.reduce((s,o)=>s+(+o.total||0),0));
+const L2=orders.filter(o=>ordF==="all"||o.status===ordF);$("#ordBox").innerHTML=L2.length?L2.map(o=>`<div class="border border-rose-soft rounded p-3 text-sm ${o.status==="New"?"bg-rose-soft/40":""}"><div class="flex justify-between gap-2 flex-wrap"><b>#${esc(String(o.id).slice(-5))} ${esc(o.name)} · <a href="tel:${esc(o.phone)}" class="text-rose-deep underline">${esc(o.phone)}</a></b><span class="text-xs text-stone-500">${new Date(o.ts).toLocaleString()}</span></div><p>📍 ${esc(o.address)} · ${esc(o.payment)}${o.lat?` · <a class="text-rose-deep underline" target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=${o.lat}&mlon=${o.lon}#map=17/${o.lat}/${o.lon}">🗺 ${t("map")}</a>`:""}</p><p class="text-stone-600">${o.items.map(i=>`${esc(i.title)} ×${i.qty}`).join(", ")}</p><div class="flex justify-between items-center mt-2"><b class="text-rose-deep">${money(o.total)}</b><select data-s="${o.id}" class="inp !w-auto !py-1">${["New","Pending","Completed"].map(s=>`<option value="${s}" ${o.status===s?"selected":""}>${t(s)}</option>`).join("")}</select><button data-r="${o.id}" class="text-xs text-red-500 ml-2" aria-label="delete">🗑</button></div></div>`).join(""):`<p class="text-stone-400">${t("none")}</p>`;
+$("#ordBox").querySelectorAll("[data-s]").forEach(s=>s.onchange=()=>B.setStatus(s.dataset.s,s.value));$("#ordBox").querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{if(confirm(t("sure")))B.delOrder(b.dataset.r)})}
+function renderPList(){$("#pList").innerHTML=products.map(p=>`<div class="flex items-center gap-3 bg-blush rounded p-2"><img src="${esc(p.image)}" class="w-10 h-10 rounded object-cover"><span class="flex-1 text-sm">${esc(p.title)} · ${money(p.price)}</span><button data-k="${p.id}" class="text-xs ${p.stock===false?"text-stone-400":"text-green-600"}">${p.stock===false?t("sold"):t("stock")}</button><button data-e="${p.id}" class="text-xs text-rose-deep">${t("edit")}</button><button data-x="${p.id}" class="text-xs text-red-500">${t("del")}</button></div>`).join("");
+$("#pList").querySelectorAll("[data-x]").forEach(b=>b.onclick=async()=>{await B.delProduct(b.dataset.x);toast("🗑️")});
+$("#pList").querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{const p=products.find(x=>x.id===b.dataset.k);B.saveProduct({...p,stock:p.stock===false})});$("#pList").querySelectorAll("[data-e]").forEach(b=>b.onclick=()=>{const p=products.find(x=>x.id===b.dataset.e);editing=p.id;$("#pt").value=p.title;$("#pr").value=p.price;$("#pc").value=p.category;curImg=p.image;$("#pv").src=curImg;$("#pv").classList.remove("hidden");$("#pd").value=p.description;$("#pt").focus()})}
+
+/* ============ SETTINGS, IMAGES, SORT ============ */
+const BAG='<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="text-rose-deep"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>';
+const shrink=(file,max,mime)=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const k=Math.min(1,max/Math.max(i.width,i.height)),c=document.createElement("canvas");c.width=Math.round(i.width*k);c.height=Math.round(i.height*k);const x=c.getContext("2d");if(mime==="image/jpeg"){x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height)}x.drawImage(i,0,0,c.width,c.height);res(c.toDataURL(mime,.8))};i.onerror=rej;i.src=r.result};r.onerror=rej;r.readAsDataURL(file)});
+const logo=c=>{const n=(S.name||"PENELOPA COSMETICS").split(" "),h=logo0(c).replace("PENELOPA",()=>esc(n[0])).replace("COSMETICS",()=>esc(n.slice(1).join(" ")));return S.logo?h.replace(/<svg.*?<\/svg>/,()=>`<img src="${S.logo}" class="h-9 w-9 object-contain" alt="">`):h};
+function applySettings(){document.documentElement.style.setProperty("--deep",S.color||"#b83b63");$("#logo1").innerHTML=logo(1);$("#logo2").innerHTML=logo(2);
+$("#cartIc").innerHTML=S.cartIcon?`<img src="${S.cartIcon}" class="w-8 h-8 object-contain" alt="">`:BAG;
+$("#home").style.background=S.hero?`linear-gradient(rgba(255,245,247,.8),rgba(255,245,247,.8)),url("${S.hero}") center/cover`:"";
+document.title=S.name||"PENELOPA COSMETICS";const f=document.querySelector("[data-i=contactT]");if(f&&S.contact)f.textContent=S.contact}
+function renderSort(){$("#sort").innerHTML=[["new","sNew"],["low","sLow"],["high","sHigh"]].map(([v,k])=>`<option value="${v}" ${sortBy===v?"selected":""}>${t(k)}</option>`).join("")}
+$("#sort").onchange=e=>{sortBy=e.target.value;renderGrid()};
+function renderSettings(){const ns={};const row=(k,l)=>`<label class="block text-sm mt-3">${l}<input id="s_${k}" class="inp mt-1" value="${esc(S[k]||"")}"></label>`;
+const img=(k,l)=>`<div class="mt-3 text-sm">${l}<div class="flex items-center gap-3 mt-1"><img id="v_${k}" src="${S[k]||""}" class="w-14 h-14 object-contain border border-rose-soft ${S[k]?"":"hidden"}"><label class="btn !bg-white !text-rose-deep border border-rose-soft cursor-pointer">📷 ${t("pick")}<input id="f_${k}" type="file" accept="image/*" class="hidden"></label><button data-c="${k}" class="text-xs text-red-500">${t("del")}</button></div></div>`;
+modal(`<div class="p-5 relative"><button id="mx" class="absolute top-3 right-4 text-2xl">✕</button><h2 class="font-head text-3xl text-rose-deep">⚙ ${t("settings")}</h2>${row("name",t("sname"))}${row("contact",t("scontact"))}${row("cur",t("scur"))}<label class="block text-sm mt-3">${t("scolor")}<input id="s_color" type="color" class="mt-1 block w-16 h-10" value="${S.color||"#b83b63"}"></label>${img("logo",t("slogo"))}${img("hero",t("shero"))}${img("cartIcon",t("scart"))}<div class="flex gap-2 mt-5"><button id="ss" class="btn">${t("save")}</button><button id="sb" class="btn !bg-white !text-rose-deep border border-rose-soft">←</button></div></div>`);
+$("#mx").onclick=closeModal;$("#sb").onclick=renderAdmin;
+["logo","hero","cartIcon"].forEach(k=>$("#f_"+k).onchange=async e=>{const f=e.target.files[0];if(!f)return;try{ns[k]=await shrink(f,k==="hero"?1400:300,k==="hero"?"image/jpeg":"image/png");$("#v_"+k).src=ns[k];$("#v_"+k).classList.remove("hidden")}catch(x){toast("Image error")}});
+$("#mc").querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{ns[b.dataset.c]="";$("#v_"+b.dataset.c).classList.add("hidden")});
+$("#ss").onclick=async()=>{try{await B.saveSettings({name:$("#s_name").value.trim(),contact:$("#s_contact").value.trim(),cur:$("#s_cur").value.trim(),color:$("#s_color").value,...ns});toast("✔ "+t("save"),true);renderAdmin()}catch(e){toast("Error: "+e.message)}}}
+
+/* ============ BOOT ============ */
+$("#lang").onchange=e=>{LI=+e.target.value;try{localStorage.setItem("pl",LI)}catch(x){}applyLang()};
+$("#q").oninput=renderGrid;
+applyLang();
+initDB().then(()=>{B.settings(s=>{S=s||{};applySettings();renderGrid();renderCart()});B.products(l=>{products=l;renderGrid();renderCart();if(admin&&$("#pList"))renderPList()})}).catch(e=>{console.error(e);toast("Firebase error: "+e.message)});
+</script></body></html>
